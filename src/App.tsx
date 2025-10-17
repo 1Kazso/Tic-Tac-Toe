@@ -1,5 +1,6 @@
 import { useState } from "react"
 import Square from "./Square"
+import Winner from "./Winner"
 
 function App() {
   const CIRCLE = "CIRCLE"
@@ -12,18 +13,57 @@ function App() {
       EMPTY, EMPTY, EMPTY,
       EMPTY, EMPTY, EMPTY,
       EMPTY, EMPTY, EMPTY
-    ]
+    ],
+    Winner: false
   })
+  const checkwinner = (theGrid) => {
+    for (let offset = 0; offset <= 6; offset += 3) {
+      if (theGrid[0 + offset] != EMPTY && theGrid[0 + offset] == theGrid[1 + offset] && theGrid[1 + offset] == theGrid[2 + offset]) {
+        return true
+      }
+    }
+    for (let offset = 0; offset <= 2; offset += 1) {
+      if (theGrid[0 + offset] != EMPTY && theGrid[0 + offset] == theGrid[3 + offset] && theGrid[3 + offset] == theGrid[6 + offset]) {
+        return true
+      }
 
+    }
+    for (let offset = 0; offset <= 2; offset += 2) {
+      if (theGrid[0 + offset] != EMPTY && theGrid[0 + offset] == theGrid[4 + offset] && theGrid[4 + offset] == theGrid[8 + offset]) {
+        return true
+      }
+
+    }
+    return false
+
+  }
+const checkSquash = (theGrid) => {
+  for (let index = 0; index < theGrid.Length; index++)
+  {
+    if (theGrid[index] == EMPTY)
+      return false
+  }
+  return board.Winner
+}
   const handleTurn = (pos) => {
     const allBoardPositions = [...board.position]
     allBoardPositions[pos] = board.player
     setBoard({
       player: board.player == CROSS ? CIRCLE : CROSS,
-      position: allBoardPositions
+      position: allBoardPositions,
+      Winner: checkwinner(allBoardPositions)
     })
   }
-
+  const resetGame = () => {
+    setBoard({
+      player: CROSS,
+      position: [
+        EMPTY, EMPTY, EMPTY,
+        EMPTY, EMPTY, EMPTY,
+        EMPTY, EMPTY, EMPTY
+      ]
+    })
+  }
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-4">
       <h1 className="text-4xl">Tic Tac Toe</h1>
@@ -41,6 +81,7 @@ function App() {
       </div>
       {/* end grid box */}
       <p className="text-xl">Player {board.player == CROSS ? "X's" : "O's"} Turn</p>
+      {board.Winner && <Winner rstGame={resetGame} />}
     </div>
   )
 }
